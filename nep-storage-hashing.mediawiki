@@ -1,7 +1,7 @@
 <pre>
   NEP: <to be assigned>
   Title: NEO Storage Hashing
-  Author: Wing Yung Chan (~wy) <wingyungchan@gmail.com>, F27 Ventures Development
+  Author: Wing Yung Chan (~wy) <wingyungchan@gmail.com>, F27 Ventures Development, Vitor Nazário Coelho (~vncoelho) <vncoelho@gmail.com>, NeoResearch
   Type: Standard
   Status: Draft
   Created: 2018-08-27
@@ -15,7 +15,9 @@ Add a hash for each block to represent the changes to Storage.
 
 Currently blocks contain a hash which amongst other things, is a hash of the ordered list of transactions contained in the Block.
 However, the changes to Storage are not recorded in the block. Consequently, different node implementations may agree on block hashes but have completely different states.
-As a result, we have nodes that are on mainnet that a block sequence that agrees with other nodes but differs on Storage calls, with no easy way to know who is correct.
+As a result, we have nodes that are on mainnet with a block sequence that agrees with other nodes but differs on Storage calls, with no easy way to know who is correct.
+
+Neo is a multi-national community, in which contributions come from different backgrounds and distinct programming languages. It is our task to provide didactic tools that minimize error possibilities and help everyone to stay aligned.
 
 ==Specification==
 
@@ -29,8 +31,8 @@ The two current method calls that can enact a change are Storage.Delete(key) and
 
 <pre>
 For a given Smart Contract with address A and at Block B,
-StorageHash(A, B) = hash(sum(storage_hash(op1), storage_hash(op2),...)) for op1,... in [Storage.Delete, Storage.Put]
-Then, StorageHash(B) = hash(StorageHash(A_0, B), ..., StorageHash(A_n, B)) for A_0,... called in B.txs
+StorageHash(A, B) = hash(sum(storage_hash(op_1), ..., storage_hash(op_i), ..., storage_hash(op_n))) for `op_i` in [Storage.Delete(key), Storage.Put(key,value)], with n being the number of operations to that SC scripthash in a specific block B.
+Then, StorageHash(B) = hash(StorageHash(A_0, B), ..., StorageHash(A_i, B), ..., StorageHash(A_c, B)) for A_0,... called in B.txs, with c being the number of SC scripthashes invoked in block B.
 </pre>
 
 ==Rationale==
