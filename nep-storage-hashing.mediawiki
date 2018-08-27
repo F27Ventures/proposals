@@ -1,0 +1,56 @@
+<pre>
+  NEP: <to be assigned>
+  Title: NEO Storage Hashing
+  Author: Wing Yung Chan (~wy) <wingyungchan@gmail.com>, F27 Ventures Development
+  Type: Standard
+  Status: Draft
+  Created: 2018-08-27
+</pre>
+
+==Abstract==
+
+Add a hash for each block to represent the changes to Storage.
+
+==Motivation==
+
+Currently blocks contain a hash which amongst other things, is a hash of the ordered list of transactions contained in the Block.
+However, the changes to Storage are not recorded in the block. Consequently, different node implementations may agree on block hashes but have completely different states.
+As a result, we have nodes that are on mainnet that a block sequence that agrees with other nodes but differs on Storage calls, with no easy way to know who is correct.
+
+==Specification==
+
+A Block contains a number of transactions (tx's) which the NEO VM will process in the sequence it receives from the Block.
+Some transactions are invocation calls on Smart Contracts. Each smart contract has the opportunity to have its own isolated storage space, part of 'Storage'.
+As the transactions are processed, there may be 1 or more calls that modify Storage for a particular Smart Contract. This will always be in the same order.
+The two current method calls that can enact a change are Storage.Delete(key) and Storage.Put(key, value).
+
+# Storage.Delete(key) => "Delete" + key.toBytes()
+# Storage.Put(key, value) => "Put" + key.toBytes() + value.toBytes()
+
+<pre>
+For a given Smart Contract with address A and at Block B,
+StorageHash(A, B) = hash(sum(storage_hash(op1), storage_hash(op2),...)) for op1,... in [Storage.Delete, Storage.Put]
+Then, StorageHash(B) = hash(StorageHash(A_0, B), ..., StorageHash(A_n, B)) for A_0,... called in B.txs
+</pre>
+
+==Rationale==
+
+If two nodes N1 and N2 are both at Block B and for each Block 0, ..., b, ..., B: StorageHash_N1(b) === StorageHash_N2(b), then
+The 'Storage' of both nodes is identical in the sense that Storage.Get(contract, key) will return the same for any (contract, key).
+
+At the moment, we have no such guarantees and there are examples where some nodes have Block hash agreement but differ on Storage.
+This may be due to bugs in the implementations of the nodes, internal state corruption, or other.
+
+Since there are now dozens of NEP-5 Tokens with real economic value residing exclusively in Storage as well as discussions on https://github.com/neo-project/neo/issues/338 to move off of UTXO into Storage, it makes sense to be able to validate Storage consistency across nodes at various Blockheights.
+
+==Backwards Compatibility==
+
+It would preferable to store the Block's overall StorageHash in the blockchain itself (i.e. in the block metadata), however, for backwards compatbility this can be stored in Storage.
+
+==Test Cases==
+
+This has no impact to Consensus so no test cases are needed for this NEP.
+
+==Implementation==
+
+Implementations will follow.
