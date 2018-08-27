@@ -15,7 +15,7 @@ Add a hash for each block to represent the changes to Storage.
 
 Currently blocks contain a hash which amongst other things, is a hash of the ordered list of transactions contained in the Block.
 However, the changes to Storage are not recorded in the block. Consequently, different node implementations may agree on block hashes but have completely different states.
-As a result, we have nodes that are on mainnet with a block sequence that agrees with other nodes but differs on Storage calls, with no easy way to know who is correct.
+As a result, poor-implemented mainnet nodes can possibly have a block sequence that agrees with other nodes but differs on Storage calls, with no easy way to know who is correct.
 
 Neo is a multi-national community, in which contributions come from different backgrounds and distinct programming languages. It is our task to provide didactic tools that minimize error possibilities and help everyone to stay aligned.
 
